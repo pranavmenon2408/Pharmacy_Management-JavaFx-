@@ -178,7 +178,8 @@ public class App extends Application {
                                         successAlert2.setHeaderText(null);
                                         successAlert2.setContentText("Employee Added Successfully");
                                         successAlert2.showAndWait();
-                                        age.setVisible(false);
+                                        vBox2.getChildren().removeAll(age,department,email,phField,address,btn4);
+                                        /*age.setVisible(false);
                                         age.setManaged(false);
                                         department.setVisible(false);
                                         department.setManaged(false);
@@ -189,7 +190,7 @@ public class App extends Application {
                                         address.setVisible(false);
                                         address.setManaged(false);
                                         btn4.setVisible(false);
-                                        btn4.setManaged(false);
+                                        btn4.setManaged(false);*/
                                         }
                                     });
                                 }
