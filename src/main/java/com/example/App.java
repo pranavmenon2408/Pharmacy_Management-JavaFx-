@@ -154,7 +154,7 @@ public class App extends Application {
                                         else{
                                         assign+=i+". "+a+c;
                                         
-                                        if(i%4==0)
+                                        if(i%2==0)
                                             c='\n';
                                         else{
                                             c='\t';
@@ -163,10 +163,11 @@ public class App extends Application {
                                     }
                                     Label details=new Label(emp.toString()+assign);
                                     last=details;
-                                    details.setStyle("-fx-font-size: 28; -fx-background-color: white; -fx-text-fill: black;");
+                                    details.setStyle("-fx-font-size: 24; -fx-background-color: white; -fx-text-fill: black; -fx-border-color: black; -fx-border-width: 4px;");
                                     
                                     
                                     details.setMaxWidth(800);
+                                    details.setMinHeight(300);
                                     vBox2.getChildren().addAll(details);
                                 }
                                 else{
@@ -276,7 +277,7 @@ public class App extends Application {
                                 if(pat!=null){
                                     Label details=new Label(pat.toString());
                                     last=details;
-                                    details.setStyle("-fx-font-size: 18; -fx-background-color: lightgray; -fx-text-fill: black;");
+                                    details.setStyle("-fx-font-size: 18; -fx-background-color: white; -fx-text-fill: black; -fx-border-color: black; -fx-border-width: 4px;");
                                     vBox2.getChildren().addAll(details);
                                 }
                                 else{
