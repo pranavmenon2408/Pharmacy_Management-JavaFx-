@@ -7,6 +7,7 @@ import static com.mongodb.client.model.Filters.eq;
 //import com.example.Patients.PatientRecords;
 //import com.example.Pharmacy.PharmacyRecord;
 import com.mongodb.MongoException;
+import com.mongodb.client.FindIterable;
 
 //import org.bson.Document;
 
@@ -97,6 +98,31 @@ public class EmpInsertDelete {
             } catch (MongoException me) {
                 System.err.println("Unable to update due to an error: " + me);
             }
+        }
+    }
+    public static String getAttending(String name,String dept){
+        CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
+        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
+        // Replace the uri string with your MongoDB deployment's connection string
+        String uri = "mongodb+srv://pranav2408dhruv:eedCE0SG9zXLbLJ1@cluster0.zsfaz5c.mongodb.net/?retryWrites=true&w=majority";
+        try (MongoClient mongoClient = MongoClients.create(uri)) {
+            MongoDatabase database = mongoClient.getDatabase("HOMS").withCodecRegistry(pojoCodecRegistry);
+            MongoCollection<EmployeeRecord> collection = database.getCollection("Employees", EmployeeRecord.class);
+            FindIterable<EmployeeRecord> emp = collection.find(eq("department",dept ));
+            
+            String doctor="";
+            for(EmployeeRecord em:emp){
+                List<String> attending=em.getAssignments();
+                for(String a:attending){
+                    if(a!=null){
+                    if(a.equals(name)){
+                        doctor=em.getName();
+                    }
+                }
+            }
+            }
+            mongoClient.close();
+            return doctor;
         }
     }
     

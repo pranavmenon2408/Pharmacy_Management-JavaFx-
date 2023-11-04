@@ -125,6 +125,10 @@ public class App extends Application {
                 comboBox.setOnAction(event->{
                         String opt=comboBox.getValue();
                         if(opt.equals("Employee")){
+                            if(last!=null){
+                                    vBox2.getChildren().remove(last);
+                                    last=null;
+                            }
                             if(vBox2.getChildren().contains(textField))
                                 vBox2.getChildren().removeAll(textField,btn3);
                             textField.setPromptText("Enter Employee Name");
@@ -275,9 +279,13 @@ public class App extends Application {
                                     last=null;
                                 }
                                 if(pat!=null){
-                                    Label details=new Label(pat.toString());
+                                    
+                                    String doc=EmpInsertDelete.getAttending(name, pat.getConcernedDepartment());
+                                    Label details=new Label(pat.toString()+"\nDoctor Assigned: "+doc);
                                     last=details;
-                                    details.setStyle("-fx-font-size: 18; -fx-background-color: white; -fx-text-fill: black; -fx-border-color: black; -fx-border-width: 4px;");
+                                    details.setStyle("-fx-font-size: 20; -fx-background-color: white; -fx-text-fill: black; -fx-border-color: black; -fx-border-width: 4px;");
+                                    details.setMaxWidth(400);
+                                    details.setMinHeight(250);
                                     vBox2.getChildren().addAll(details);
                                 }
                                 else{
