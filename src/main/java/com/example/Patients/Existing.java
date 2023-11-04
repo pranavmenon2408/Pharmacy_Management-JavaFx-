@@ -14,6 +14,7 @@ import static com.mongodb.MongoClientSettings.getDefaultCodecRegistry;
 import static org.bson.codecs.configuration.CodecRegistries.fromProviders;
 import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
+import org.apache.commons.text.WordUtils;
 import org.bson.codecs.configuration.CodecProvider;
 import org.bson.codecs.configuration.CodecRegistry;
 import org.bson.codecs.pojo.PojoCodecProvider;
@@ -33,12 +34,12 @@ public class Existing {
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("HOMS").withCodecRegistry(pojoCodecRegistry);
             MongoCollection<PatientRecords> collection = database.getCollection("Patients", PatientRecords.class);
-            PatientRecords pat = collection.find(eq("name", name)).first();
+            PatientRecords pat = collection.find(eq("name", WordUtils.capitalizeFully(name))).first();
             mongoClient.close();
             return pat;
         }
     }
-    public static void insertPat(String name,String address,String pno,String cd,int age,boolean checkup,boolean surgery){
+    public static void insertPat(String name,String address,String email,String pno,String cd,int age,boolean illness,boolean injury,boolean surgery){
         CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
         CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
         // Replace the uri string with your MongoDB deployment's connection string
@@ -46,7 +47,7 @@ public class Existing {
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("HOMS").withCodecRegistry(pojoCodecRegistry);
             MongoCollection<PatientRecords> collection = database.getCollection("Patients", PatientRecords.class);
-            PatientRecords pat=new PatientRecords(name, address, pno, cd, age, checkup, surgery);
+            PatientRecords pat=new PatientRecords(WordUtils.capitalizeFully(name), address, email, pno, cd, age, illness, injury, surgery);
             collection.insertOne(pat);
             mongoClient.close();
         }

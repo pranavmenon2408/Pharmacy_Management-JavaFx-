@@ -72,8 +72,8 @@ public class EmployeeRecord {
     }
     @Override
     public String toString(){
-        return "Name: "+name+"\nAge: "+age+"\nDepartment: "+department+"\nEmail: "+email+
-        "\nPhone No: "+mPhoneNo+"\nAddress: "+ address+"\nEmpId: "+mEmpId;
+        return "Name: "+name+"\t\tAge: "+age+"\nDepartment: "+department+"\t\tEmail: "+email+
+        "\nPhone No: "+mPhoneNo+"\t\tAddress: "+ address+"\nEmpId: "+mEmpId;
     }
 
     

@@ -6,6 +6,8 @@ import com.example.Employees.EmpInsertDelete;
 import com.example.Employees.EmployeeRecord;
 //import com.example.Patients.*;
 import com.example.Login.*;
+import com.example.Patients.Existing;
+import com.example.Patients.PatientRecords;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -21,6 +23,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+
 import javafx.scene.layout.HBox;
 //import javafx.scene.layout.Background;
 //import javafx.scene.layout.BackgroundFill;
@@ -37,7 +40,15 @@ import javafx.util.Duration;
 
 public class App extends Application {
     static int attempt;
-    private Label last;
+    Label last;
+    TextField textField=new TextField();
+    TextField department;
+    Button btn3=new Button("");
+    Button btn4;
+    private String dept;
+    String assign="\nAppointments: \n";
+    CheckBox c3;
+    boolean illness,injury,surgery;
     public static void main(String[] args) {
         
         launch(args);
@@ -64,7 +75,7 @@ public class App extends Application {
         vbox.setPadding(new Insets(20, 20, 20, 20));
         Label tLabel=new Label("Admin Login");
         tLabel.setStyle("-fx-text-fill: yellow;");
-        Font font=Font.font("Times New Roman",FontWeight.BOLD,44);
+        Font font=Font.font("Times New Roman",FontWeight.BOLD,54);
         tLabel.setFont(font);
         VBox.setMargin(tLabel, new Insets(5));
         //tLabel.setTranslateY(-10);
@@ -74,12 +85,17 @@ public class App extends Application {
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Enter Password");
         usernameField.setMaxWidth(300);
+        usernameField.setMinHeight(30);
+        usernameField.setFont(Font.font(16));
         VBox.setMargin(usernameField, new Insets(5));
         passwordField.setMaxWidth(300);
+        passwordField.setMinHeight(30);
+        passwordField.setFont(Font.font(16));
         VBox.setMargin(passwordField, new Insets(5));
         // Create a Login button
+        //FlowPane pane=new FlowPane();
         Button loginButton = new Button("Login");
-        loginButton.setStyle("-fx-background-radius: 10; -fx-font-size: 18;");
+        loginButton.setStyle("-fx-background-radius: 10; -fx-font-size: 20;");
         loginButton.setOnAction(e -> {
             String username = usernameField.getText();
             String password = passwordField.getText();
@@ -101,7 +117,7 @@ public class App extends Application {
                 Label tLabel2=new Label("Employee/Patient Details");
                 tLabel2.setStyle("-fx-text-fill: darkblue; -fx-background-color: lightgray;");
                 tLabel2.setFont(font);
-                tLabel2.setTranslateX(200);
+                tLabel2.setTranslateX(350);
                 ObservableList<String> options=FXCollections.observableArrayList("Employee","Patient");
                 ComboBox<String> comboBox=new ComboBox<>(options);
                 comboBox.setPromptText("Select an option");
@@ -109,29 +125,55 @@ public class App extends Application {
                 comboBox.setOnAction(event->{
                         String opt=comboBox.getValue();
                         if(opt.equals("Employee")){
-                            TextField textField=new TextField();
+                            if(vBox2.getChildren().contains(textField))
+                                vBox2.getChildren().removeAll(textField,btn3);
                             textField.setPromptText("Enter Employee Name");
-                            textField.setMaxWidth(250);
-                            Button btn3=new Button("Display Employee Details");
-                            btn3.setStyle("-fx-background-radius: 10; -fx-font-size: 14;");
+                            textField.setMaxWidth(300);
+                            textField.setMinHeight(30);
+                            textField.setFont(Font.font(16));
+                            btn3.setText("Display Employee Details");
+                            btn3.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
                             btn3.setTranslateX(30);
                             vBox2.getChildren().addAll(textField,btn3);
+                            
                             
                             btn3.setOnAction(e2->{
                                 String name=textField.getText();
                                 EmployeeRecord emp=EmpInsertDelete.returnEmp(name);
                                 if(last!=null){
-                                    last.setVisible(false);
-                                    last.setManaged(false);
+                                    vBox2.getChildren().removeAll(last);
                                     last=null;
                                 }
                                 if(emp!=null){
-                                    Label details=new Label(emp.toString());
+                                    
+                                    
+                                    int i=1;
+                                    char c='\t';
+                                    for(String a:emp.getAssignments()){
+                                        assign+=i+". "+a+c;
+                                        i++;
+                                        if(i%3==0)
+                                            c='\n';
+                                        else{
+                                            c='\t';
+                                        }
+                                    }
+                                    Label details=new Label(emp.toString()+assign);
                                     last=details;
-                                    details.setStyle("-fx-font-size: 16; -fx-background-color: lightgray; -fx-text-fill: black;");
+                                    details.setStyle("-fx-font-size: 28; -fx-background-color: white; -fx-text-fill: black;");
+                                    
+                                    
+                                    details.setMaxWidth(800);
                                     vBox2.getChildren().addAll(details);
                                 }
                                 else{
+                                    Alert errorAlert4 = new Alert(Alert.AlertType.ERROR);
+                                    errorAlert4.setTitle("Empty data field");
+                                    errorAlert4.setHeaderText(null);
+                                    errorAlert4.setContentText("One of the fields is empty, all fields are compulsory");
+                                    if(name==""){
+                                        errorAlert4.showAndWait();
+                                    }
                                     Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                                     errorAlert.setTitle("Employee not in Database");
                                     errorAlert.setHeaderText(null);
@@ -139,25 +181,40 @@ public class App extends Application {
                                     errorAlert.showAndWait();
                                     TextField age=new TextField();
                                     age.setPromptText("Enter age ");
-                                    age.setMaxWidth(250);
+                                    age.setMaxWidth(300);
+                                    age.setMinHeight(30);
+                                    age.setFont(Font.font(16));
                                     TextField department=new TextField();
                                     department.setPromptText("Enter department ");
-                                    department.setMaxWidth(250);
+                                    department.setMaxWidth(300);
+                                    department.setMinHeight(30);
+                                    department.setFont(Font.font(16));
                                     TextField email=new TextField();
                                     email.setPromptText("Enter email ");
-                                    email.setMaxWidth(250);
+                                    email.setMaxWidth(300);
+                                    email.setMinHeight(30);
+                                    email.setFont(Font.font(16));
                                     TextField phField=new TextField();
                                     phField.setPromptText("Enter Phone number ");
-                                    phField.setMaxWidth(250);
+                                    phField.setMaxWidth(300);
+                                    phField.setMinHeight(30);
+                                    phField.setFont(Font.font(16));
                                     TextField address=new TextField();
                                     address.setPromptText("Enter address ");
-                                    address.setMaxWidth(250);
+                                    address.setMaxWidth(300);
+                                    address.setMinHeight(30);
+                                    address.setFont(Font.font(16));
                                     Button btn4=new Button("Add Employee Details");
-                                    btn4.setStyle("-fx-background-radius: 10; -fx-font-size: 14;");
+                                    btn4.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
                                     btn4.setTranslateX(30);
                                     vBox2.getChildren().addAll(age,department,email,phField,address,btn4);
                                     btn4.setOnAction(e3->{
-                                        int a=Integer.parseInt(age.getText());
+                                        
+                                        int a=0;
+                                        if(age.getText()==""){
+                                            errorAlert4.showAndWait();
+                                        }else{
+                                        a=Integer.parseInt(age.getText());}
                                         String dept=department.getText();
                                         String em=email.getText();
                                         String pno=phField.getText();
@@ -171,7 +228,10 @@ public class App extends Application {
                                             errorAlert3.setHeaderText(null);
                                             errorAlert3.setContentText("Invalid Phone Number Enter correct one.");
                                             errorAlert3.showAndWait();
-                                        }else{
+                                        }else if(name=="" || dept==""|| em=="" || addr==""){
+                                            errorAlert4.showAndWait();
+                                        }
+                                        else{
                                         EmpInsertDelete.insertEmp(name, addr, pno, dept, em, a, empid, emptylist);
                                         Alert successAlert2 = new Alert(Alert.AlertType.INFORMATION);
                                         successAlert2.setTitle("Employee Aded");
@@ -179,29 +239,179 @@ public class App extends Application {
                                         successAlert2.setContentText("Employee Added Successfully");
                                         successAlert2.showAndWait();
                                         vBox2.getChildren().removeAll(age,department,email,phField,address,btn4);
-                                        /*age.setVisible(false);
-                                        age.setManaged(false);
-                                        department.setVisible(false);
-                                        department.setManaged(false);
-                                        email.setVisible(false);
-                                        email.setManaged(false);
-                                        phField.setVisible(false);
-                                        phField.setManaged(false);
-                                        address.setVisible(false);
-                                        address.setManaged(false);
-                                        btn4.setVisible(false);
-                                        btn4.setManaged(false);*/
+                                        
                                         }
                                     });
                                 }
                             });
                             
 
-                        }
+                        }else if (opt.equals("Patient")) {
+                            if(last!=null){
+                                    vBox2.getChildren().removeAll(last);
+                                    last=null;
+                            }
+                            if(vBox2.getChildren().contains(textField))
+                                vBox2.getChildren().removeAll(textField,btn3);
+                            textField.setPromptText("Enter Patient Name");
+                            textField.setMaxWidth(300);
+                            textField.setMinHeight(30);
+                            textField.setFont(Font.font(16));
+                            btn3.setText("Display Patient Details");
+                           
+                            btn3.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
+                            btn3.setTranslateX(30);
+                            vBox2.getChildren().addAll(textField,btn3);
+                            btn3.setOnAction(e5->{
+                                String name=textField.getText();
+                                PatientRecords pat=Existing.returnPat(name);
+                                
+                                if(last!=null){
+                                    vBox2.getChildren().remove(last);
+                                    last=null;
+                                }
+                                if(pat!=null){
+                                    Label details=new Label(pat.toString());
+                                    last=details;
+                                    details.setStyle("-fx-font-size: 18; -fx-background-color: lightgray; -fx-text-fill: black;");
+                                    vBox2.getChildren().addAll(details);
+                                }
+                                else{
+                                    
+                                    Alert errorAlert4 = new Alert(Alert.AlertType.ERROR);
+                                    errorAlert4.setTitle("Empty data field");
+                                    errorAlert4.setHeaderText(null);
+                                    errorAlert4.setContentText("One of the fields is empty, all fields are compulsory");
+                                    if(name==""){
+                                        errorAlert4.showAndWait();
+                                    }
+                                    Alert errorAlert = new Alert(Alert.AlertType.ERROR);
+                                    errorAlert.setTitle("Patient not in Database");
+                                    errorAlert.setHeaderText(null);
+                                    errorAlert.setContentText("Patient not present in Database, Add patient");
+                                    errorAlert.showAndWait();
+                                    TextField age=new TextField();
+                                    age.setPromptText("Enter age ");
+                                    age.setMinHeight(30);
+                                    age.setMaxWidth(300);
+                                    age.setFont(Font.font(16));
+                                    TextField email=new TextField();
+                                    email.setPromptText("Enter email ");
+                                    email.setMaxWidth(300);
+                                    email.setMinHeight(30);
+                                    email.setFont(Font.font(16));
+                                    TextField phField=new TextField();
+                                    phField.setPromptText("Enter Phone number ");
+                                    phField.setMaxWidth(300);
+                                    phField.setMinHeight(30);
+                                    phField.setFont(Font.font(16));
+                                    TextField address=new TextField();
+                                    address.setPromptText("Enter address ");
+                                    address.setMaxWidth(300);
+                                    address.setMinHeight(30);
+                                    address.setFont(Font.font(16));
+                                    HBox hBox3=new HBox(10);
+                                    CheckBox c1=new CheckBox("Illness");
+                                    c1.setStyle("-fx-font-size: 16; -fx-text-fill: yellow;");
+                                    CheckBox c2=new CheckBox("Injury");
+                                    c2.setStyle("-fx-font-size: 16; -fx-text-fill: yellow;");
+                                    hBox3.getChildren().addAll(c1,c2);
+                                    
+                                    c1.setOnAction(e8->{
+                                        if(c1.isSelected() && c2.isSelected()){
+                                            Alert errorAlert5=new Alert(Alert.AlertType.ERROR);
+                                            errorAlert5.setTitle("Both Illness and Injury boxes clicked");
+                                            errorAlert5.setContentText("Both boxes clicked click only one");
+                                            errorAlert5.showAndWait();
+                                            c1.setSelected(false);
+                                            c2.setSelected(false);
+                                        }else{
+                                            dept="General Physician";
+                                            illness=true;
+                                            injury=false;
+                                            surgery=false;
+                                        }
+                                    });
+                                    c2.setOnAction(e7->{
+                                        if(c1.isSelected() && c2.isSelected()){
+                                            Alert errorAlert5=new Alert(Alert.AlertType.ERROR);
+                                            errorAlert5.setTitle("Both Illness and Injury boxes clicked");
+                                            errorAlert5.setContentText("Both boxes clicked click only one");
+                                            errorAlert5.showAndWait();
+                                            c1.setSelected(false);
+                                            c2.setSelected(false);
+                                        }else{
+                                            department=new TextField();
+                                            department.setPromptText("Enter concerned department ");
+                                            department.setMaxWidth(300);
+                                            department.setMinHeight(30);
+                                            department.setFont(Font.font(16));
+                                            c3=new CheckBox("Surgery Required?");
+                                            c3.setStyle("-fx-font-size: 16; -fx-text-fill: yellow;");
+                                            surgery=false;
+                                            illness=false;
+                                            injury=true;
+                                            c3.setOnAction(ev->{
+                                                surgery=c3.isSelected();
+                                            });
+                                            vBox2.getChildren().removeAll(btn4);
+                                            vBox2.getChildren().addAll(department,c3,btn4);
+
+
+                                        }
+                                    });
+                                    btn4=new Button("Add Patient Details");
+                                    btn4.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
+                                    btn4.setTranslateX(30);
+                                    vBox2.getChildren().addAll(age,email,phField,address,hBox3,btn4);
+                                    btn4.setOnAction(e6->{
+                                        
+                                        int a=0;
+                                        if(age.getText()==""){
+                                            errorAlert4.showAndWait();
+                                        }else{
+                                        a=Integer.parseInt(age.getText());}
+                                        //dept=department.getText();
+                                        String em=email.getText();
+                                        String pno=phField.getText();
+                                        String addr=address.getText();
+                                        if(department!=null){
+                                            dept=department.getText();
+                                        }
+                                        
+                                        if(pno.length()!=10){
+                                            Alert errorAlert3 = new Alert(Alert.AlertType.ERROR);
+                                            errorAlert3.setTitle("Invalid Phone Number");
+                                            errorAlert3.setHeaderText(null);
+                                            errorAlert3.setContentText("Invalid Phone Number Enter correct one.");
+                                            errorAlert3.showAndWait();
+                                        }else if(name=="" || dept==""|| em=="" || addr==""){
+                                            errorAlert4.showAndWait();
+                                        }
+                                        else{
+                                        Existing.insertPat(name, addr, em, pno, dept, a,illness, injury, surgery);
+                                        Alert successAlert2 = new Alert(Alert.AlertType.INFORMATION);
+                                        successAlert2.setTitle("Patient Aded");
+                                        successAlert2.setHeaderText(null);
+                                        successAlert2.setContentText("Patient Added Successfully");
+                                        successAlert2.showAndWait();
+                                        vBox2.getChildren().removeAll(age,email,phField,address,hBox3,btn4);
+                                        if(department!=null){
+                                            vBox2.getChildren().removeAll(department,c3);
+                                        }
+                                       }
+                                    
+
+                            });
+                                }
+                        });
+                    }
                 });
+            
                 vBox2.getChildren().addAll(tLabel2,comboBox);
+                //pane.getChildren().add(vBox2);
                 roPane.getChildren().add(vBox2);
-                Scene scene2=new Scene(roPane,1024,541);
+                Scene scene2=new Scene(roPane,1200,634);
                 primaryStage.setTitle("Employee/Patient Page");
                 primaryStage.setScene(scene2);
                 //primaryStage.show();
@@ -218,13 +428,12 @@ public class App extends Application {
                     startDelay();
                     attempt=0;
                 }
-                }
-            
+            }
         });
-        HBox.setMargin(loginButton, new Insets(5));
+        HBox.setMargin(loginButton, new Insets(10));
         
         Button signupButton=new Button("Add User");
-        signupButton.setStyle("-fx-background-radius: 10; -fx-font-size: 18;");
+        signupButton.setStyle("-fx-background-radius: 10; -fx-font-size: 20;");
         signupButton.setOnAction(e->{
             String username=usernameField.getText();
             String password=passwordField.getText();
@@ -251,7 +460,7 @@ public class App extends Application {
         vbox.getChildren().addAll(tLabel,usernameField, passwordField, hBox);
         root.getChildren().add(vbox);
         // Create a scene and set it on the stage
-        Scene scene = new Scene(root, 1024, 541);
+        Scene scene = new Scene(root, 1200, 634);
         primaryStage.setScene(scene);
 
         primaryStage.show();

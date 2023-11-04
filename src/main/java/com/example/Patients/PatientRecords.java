@@ -4,18 +4,22 @@ public class PatientRecords {
     private String name;
     private String address;
     private String mPhoneNo;
+    private String email;
     private String mConcernedDepartment;
     private int age;
-    private boolean checkup;
+    private boolean illness;
+    private boolean injury;
     private boolean surgery;
     public PatientRecords(){}
-    public PatientRecords(String name,String address,String pno,String cd,int age,boolean checkup,boolean surgery){
+    public PatientRecords(String name,String address,String email,String pno,String cd,int age,boolean illness,boolean injury,boolean surgery){
         this.name=name;
         this.address=address;
+        this.email=email;
         mPhoneNo=pno;
         mConcernedDepartment=cd;
         this.age=age;
-        this.checkup=checkup;
+        this.illness=illness;
+        this.injury=injury;
         this.surgery=surgery;
     }
     public String getName(){
@@ -29,6 +33,12 @@ public class PatientRecords {
     }
     public void setAddress(String address){
         this.address=address;
+    }
+    public String getEmail(){
+        return email;
+    }
+    public void setEmail(String email){
+        this.email=email;
     }
     public String getPhoneNo(){
         return mPhoneNo;
@@ -48,11 +58,17 @@ public class PatientRecords {
     public void setAge(int age){
         this.age=age;
     }
-    public boolean getCheckup(){
-        return checkup;
+    public boolean getIllness(){
+        return illness;
     }
-    public void setCheckup(boolean checkup){
-        this.checkup=checkup;
+    public void setIllness(boolean illness){
+        this.illness=illness;
+    }
+    public boolean getInjury(){
+        return injury;
+    }
+    public void setInjury(boolean injury){
+        this.injury=injury;
     }
     public boolean getSurgery(){
         return surgery;
@@ -63,6 +79,6 @@ public class PatientRecords {
 
     @Override
     public String toString(){
-        return "Name is "+ name+"\nAddress is "+address+"\nPhone number is "+mPhoneNo+"\nAge is "+age+"\nConcerned Department is "+mConcernedDepartment+"\nSurgery: "+surgery+"\nCheckup: "+checkup;
+        return "Name is "+ name+"\nAddress is "+address+"\nPhone number is "+mPhoneNo+"\nAge is "+age+"\nConcerned Department is "+mConcernedDepartment;
     }
 }

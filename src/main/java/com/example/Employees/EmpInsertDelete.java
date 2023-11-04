@@ -1,6 +1,6 @@
 package com.example.Employees;
 
-
+import org.apache.commons.text.WordUtils;
 
 import static com.mongodb.client.model.Filters.eq;
 
@@ -37,7 +37,7 @@ public class EmpInsertDelete {
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("HOMS").withCodecRegistry(pojoCodecRegistry);
             MongoCollection<EmployeeRecord> collection = database.getCollection("Employees", EmployeeRecord.class);
-            EmployeeRecord emp = collection.find(eq("name", name)).first();
+            EmployeeRecord emp = collection.find(eq("name",WordUtils.capitalizeFully(name) )).first();
             mongoClient.close();
             return emp;
         }
@@ -50,7 +50,7 @@ public class EmpInsertDelete {
         try (MongoClient mongoClient = MongoClients.create(uri)) {
             MongoDatabase database = mongoClient.getDatabase("HOMS").withCodecRegistry(pojoCodecRegistry);
             MongoCollection<EmployeeRecord> collection = database.getCollection("Employees", EmployeeRecord.class);
-            EmployeeRecord emp=new EmployeeRecord(name, age, dept, email, address, pno, empId, Arrays.asList(assignments));
+            EmployeeRecord emp=new EmployeeRecord(WordUtils.capitalizeFully(name), age, dept, email, address, pno, empId, Arrays.asList(assignments));
             collection.insertOne(emp);
             mongoClient.close();
         }
