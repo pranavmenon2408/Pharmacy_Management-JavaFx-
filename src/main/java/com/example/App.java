@@ -147,16 +147,19 @@ public class App extends Application {
                                 if(emp!=null){
                                     
                                     
-                                    int i=1;
+                                    int i=0;
                                     char c='\t';
                                     for(String a:emp.getAssignments()){
+                                        if(i==0){}
+                                        else{
                                         assign+=i+". "+a+c;
-                                        i++;
-                                        if(i%3==0)
+                                        
+                                        if(i%4==0)
                                             c='\n';
                                         else{
                                             c='\t';
                                         }
+                                    }i++;
                                     }
                                     Label details=new Label(emp.toString()+assign);
                                     last=details;
@@ -221,7 +224,7 @@ public class App extends Application {
                                         String addr=address.getText();
                                         Random rand=new Random();
                                         int empid=rand.nextInt(999-100+1)+100;
-                                        String emptylist[]=new String[30];
+                                        String emptylist[]=new String[1];
                                         if(pno.length()!=10){
                                             Alert errorAlert3 = new Alert(Alert.AlertType.ERROR);
                                             errorAlert3.setTitle("Invalid Phone Number");
@@ -316,10 +319,10 @@ public class App extends Application {
                                     CheckBox c2=new CheckBox("Injury");
                                     c2.setStyle("-fx-font-size: 16; -fx-text-fill: yellow;");
                                     hBox3.getChildren().addAll(c1,c2);
-                                    
+                                     Alert errorAlert5=new Alert(Alert.AlertType.ERROR);
                                     c1.setOnAction(e8->{
                                         if(c1.isSelected() && c2.isSelected()){
-                                            Alert errorAlert5=new Alert(Alert.AlertType.ERROR);
+                                           
                                             errorAlert5.setTitle("Both Illness and Injury boxes clicked");
                                             errorAlert5.setContentText("Both boxes clicked click only one");
                                             errorAlert5.showAndWait();
@@ -334,9 +337,9 @@ public class App extends Application {
                                     });
                                     c2.setOnAction(e7->{
                                         if(c1.isSelected() && c2.isSelected()){
-                                            Alert errorAlert5=new Alert(Alert.AlertType.ERROR);
+                                            
                                             errorAlert5.setTitle("Both Illness and Injury boxes clicked");
-                                            errorAlert5.setContentText("Both boxes clicked click only one");
+                                            errorAlert5.setContentText("Both boxes clicked, Click only one");
                                             errorAlert5.showAndWait();
                                             c1.setSelected(false);
                                             c2.setSelected(false);
@@ -365,7 +368,11 @@ public class App extends Application {
                                     btn4.setTranslateX(30);
                                     vBox2.getChildren().addAll(age,email,phField,address,hBox3,btn4);
                                     btn4.setOnAction(e6->{
-                                        
+                                        if(c1.isSelected()==false && c2.isSelected()==false){
+                                            errorAlert5.setTitle("Neither Illness or Injury boxes clicked");
+                                            errorAlert5.setContentText("Neither boxes clicked, Click atleast one");
+                                            errorAlert5.showAndWait();
+                                        }
                                         int a=0;
                                         if(age.getText()==""){
                                             errorAlert4.showAndWait();
@@ -390,6 +397,7 @@ public class App extends Application {
                                         }
                                         else{
                                         Existing.insertPat(name, addr, em, pno, dept, a,illness, injury, surgery);
+                                        EmpInsertDelete.updateEmp(name, dept);
                                         Alert successAlert2 = new Alert(Alert.AlertType.INFORMATION);
                                         successAlert2.setTitle("Patient Aded");
                                         successAlert2.setHeaderText(null);
