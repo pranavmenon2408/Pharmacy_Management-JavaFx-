@@ -46,7 +46,7 @@ public class App extends Application {
     Button btn3=new Button("");
     Button btn4;
     private String dept;
-    String assign="\nAppointments: \n";
+    String assign="\nPatients: \n";
     CheckBox c3;
     boolean illness,injury,surgery;
     public static void main(String[] args) {
@@ -128,6 +128,7 @@ public class App extends Application {
                             if(last!=null){
                                     vBox2.getChildren().remove(last);
                                     last=null;
+                                    assign="\nPatients: \n";
                             }
                             if(vBox2.getChildren().contains(textField))
                                 vBox2.getChildren().removeAll(textField,btn3);
@@ -147,6 +148,7 @@ public class App extends Application {
                                 if(last!=null){
                                     vBox2.getChildren().removeAll(last);
                                     last=null;
+                                    assign="\nPatients: \n";
                                 }
                                 if(emp!=null){
                                     
