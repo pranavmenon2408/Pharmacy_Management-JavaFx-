@@ -25,6 +25,7 @@ import javafx.application.Application;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
+
 import javafx.geometry.Insets;
 import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
@@ -51,6 +52,14 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class App extends Application {
+    static ComboBox<String> med;
+    static Label stockLabel, expLabel, prLabel, resultLabel;
+    static CheckBox updateStockCheckbox, makeSaleCheckbox;
+    static TextField quantityTextField;
+    static Button setStockButton, makeSaleButton;
+
+    private static int selectedMedIndex = -1;
+    private static int[] stock = {200, 100, 300};
     static int attempt,check;
     static String bill_details;
     Label last;
@@ -73,7 +82,7 @@ public class App extends Application {
         
         GaussianBlur g=new GaussianBlur();
         g.setRadius(20);
-        String relative="img/digigov-hmis-hospital-management-system-maintain.jpg";
+        String relative="src\\main\\java\\com\\example\\img\\digigov-hmis-hospital-management-system-maintain.jpg";
         File file=new File(relative);
         String imageUrl=file.toURI().toString();
         Image bImage=new Image(imageUrl);
@@ -624,9 +633,104 @@ public class App extends Application {
         
     }
     public static void pharmScene(Stage priStage){
-        FlowPane pane=new FlowPane(10,10);
-        Scene scene=new Scene(pane,500,500);
-        priStage.setScene(scene);
+        String meds[] = {"A", "B", "C"};
+        String pr[] = {"INR 180", "INR 230", "INR 130"};
+        String exp[] = {"03/2024", "05/2025", "07/2025"};
+        priStage.setTitle("Pharmacy Management");
+
+        VBox root = new VBox(10);
+        root.setAlignment(Pos.CENTER);
+        Scene sc = new Scene(root, 280, 260);
+        priStage.setScene(sc);
+
+        stockLabel = new Label();
+        expLabel = new Label();
+        prLabel = new Label();
+        resultLabel = new Label();
+
+        ObservableList<String> medicine = FXCollections.observableArrayList(meds);
+        med = new ComboBox<String>(medicine);
+
+        updateStockCheckbox = new CheckBox("Update Stock");
+        makeSaleCheckbox = new CheckBox("Make Sale");
+        quantityTextField = new TextField("Enter Quantity");
+        setStockButton = new Button("Set Stock");
+        makeSaleButton = new Button("Make Sale");
+
+        // Initially, hide the quantity text field and buttons
+        quantityTextField.setVisible(false);
+        setStockButton.setVisible(false);
+        makeSaleButton.setVisible(false);
+
+        med.setOnAction(e-> {
+           
+                selectedMedIndex = med.getSelectionModel().getSelectedIndex();
+                root.getChildren().clear(); // Clear previous responses
+                root.getChildren().addAll(
+                        med,
+                        stockLabel,
+                        expLabel,
+                        prLabel,
+                        updateStockCheckbox,
+                        makeSaleCheckbox,
+                        quantityTextField,
+                        setStockButton,
+                        makeSaleButton,
+                        resultLabel
+                ); // Add ComboBox, labels, checkboxes, text field, buttons, and result label to VBox
+
+                if (selectedMedIndex >= 0) {
+                    stockLabel.setText("Stock: " + stock[selectedMedIndex]);
+                    expLabel.setText("Expiration Date: " + exp[selectedMedIndex]);
+                    prLabel.setText("Price: " + pr[selectedMedIndex]);
+                }
+            
+        });
+
+        updateStockCheckbox.setOnAction(e2-> {
+            
+                // Show/hide quantity text field and set stock button based on "Update Stock" checkbox
+                quantityTextField.setVisible(updateStockCheckbox.isSelected());
+                setStockButton.setVisible(updateStockCheckbox.isSelected());
+                makeSaleButton.setVisible(false);
+            
+        });
+
+        makeSaleCheckbox.setOnAction(e3->{
+            
+                // Show/hide make sale button based on "Make Sale" checkbox
+                makeSaleButton.setVisible(makeSaleCheckbox.isSelected());
+                quantityTextField.setVisible(false);
+                setStockButton.setVisible(false);
+            
+        });
+
+        setStockButton.setOnAction(e4-> {
+            
+                if (selectedMedIndex >= 0) {
+                    try {
+                        int quantity = Integer.parseInt(quantityTextField.getText());
+                        if (updateStockCheckbox.isSelected()) {
+                            stock[selectedMedIndex] += quantity;
+                            resultLabel.setText("Updated stock: " + stock[selectedMedIndex]);
+                        }
+                    } catch (NumberFormatException e) {
+                        resultLabel.setText("Invalid quantity. Please enter a number.");
+                    }
+                }
+            
+        });
+
+        makeSaleButton.setOnAction(e5-> {
+            
+                if (selectedMedIndex >= 0 && makeSaleCheckbox.isSelected()) {
+                    stock[selectedMedIndex] -= 1;
+                    resultLabel.setText("Updated stock: " + stock[selectedMedIndex]);
+                }
+            
+        });
+
+        root.getChildren().addAll(med);
     }
     public static void billScene(Stage priStage,PatientRecords pat){
         priStage.setTitle("PDF Bill Generator");
