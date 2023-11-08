@@ -648,7 +648,7 @@ public class App extends Application {
         // Event handler for generating the PDF bill
         calculateTotalButton.setOnAction(e -> {
             try {
-                    generatePDFBill(heading+bill_details,pane);
+                    generatePDFBill(heading.getText()+bill_details,pane);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
