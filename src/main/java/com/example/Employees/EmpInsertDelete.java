@@ -98,6 +98,7 @@ public class EmpInsertDelete {
             } catch (MongoException me) {
                 System.err.println("Unable to update due to an error: " + me);
             }
+            mongoClient.close();
         }
     }
     public static String getAttending(String name,String dept){
@@ -161,7 +162,7 @@ public class EmpInsertDelete {
             } catch (MongoException me) {
                 System.err.println("Unable to update due to an error: " + me);
             }
-            
+            mongoClient.close();
         }
     }
 }
