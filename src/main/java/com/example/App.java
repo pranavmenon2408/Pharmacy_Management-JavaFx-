@@ -1,5 +1,6 @@
 package com.example;
 
+import java.io.File;
 import java.util.Random;
 
 
@@ -62,7 +63,10 @@ public class App extends Application {
         
         GaussianBlur g=new GaussianBlur();
         g.setRadius(20);
-        Image bImage=new Image("file:///C://Users//Pranav//demo//img//digigov-hmis-hospital-management-system-maintain.jpg");
+        String relative="img/digigov-hmis-hospital-management-system-maintain.jpg";
+        File file=new File(relative);
+        String imageUrl=file.toURI().toString();
+        Image bImage=new Image(imageUrl);
         ImageView bImageView=new ImageView(bImage);
         bImageView.setEffect(g);
         StackPane root=new StackPane(bImageView);
@@ -318,6 +322,17 @@ public class App extends Application {
                                                 Existing.updatePat(name);
                                                 flag=true;
                                             }
+                                            
+                                        });
+                                    }else{
+                                        btn5=new Button("Go To Pharmacy");
+                                        btn4=new Button("Print Bill");
+                                        HBox hBox3=new HBox();
+                                        HBox.setMargin(btn4, new Insets(10));
+                                        hBox3.getChildren().addAll(btn5,btn4);
+                                        vBox2.getChildren().add(hBox3);
+                                        btn5.setOnAction(eve->{
+                                            newScene(primaryStage);
                                         });
                                     }
                                 
@@ -554,5 +569,10 @@ public class App extends Application {
         alert.setContentText("You can try Login again");
         alert.showAndWait();
         
+    }
+    public static void newScene(Stage priStage){
+        FlowPane pane=new FlowPane(10,10);
+        Scene scene=new Scene(pane);
+        priStage.setScene(scene);
     }
 }
