@@ -633,16 +633,26 @@ public class App extends Application {
         
     }
     public static void pharmScene(Stage priStage){
+        GaussianBlur g=new GaussianBlur();
+        g.setRadius(15);
+        String relative="src\\main\\java\\com\\example\\img\\pharmacy.jpg";
+        File file=new File(relative);
+        String imageUrl=file.toURI().toString();
+        Image bImage=new Image(imageUrl);
+        ImageView bImageView=new ImageView(bImage);
+        bImageView.setEffect(g);
+        StackPane root=new StackPane(bImageView);
         String meds[] = {"A", "B", "C"};
         String pr[] = {"INR 180", "INR 230", "INR 130"};
         String exp[] = {"03/2024", "05/2025", "07/2025"};
         priStage.setTitle("Pharmacy Management");
 
-        VBox root = new VBox(10);
-        root.setAlignment(Pos.CENTER);
-        Scene sc = new Scene(root, 280, 260);
-        priStage.setScene(sc);
-
+        FlowPane pane=new FlowPane(Orientation.VERTICAL,10,10);
+        pane.setPadding(new Insets(15,15,15,15));
+        Label label=new Label("Pharmacy");
+        label.setFont(Font.font("Times New Roman", FontWeight.BOLD, 42));
+        label.setTranslateX(320);
+        pane.getChildren().add(label);
         stockLabel = new Label();
         expLabel = new Label();
         prLabel = new Label();
@@ -653,10 +663,15 @@ public class App extends Application {
 
         updateStockCheckbox = new CheckBox("Update Stock");
         makeSaleCheckbox = new CheckBox("Make Sale");
-        quantityTextField = new TextField("Enter Quantity");
+        quantityTextField = new TextField();
+        quantityTextField.setPromptText("Enter Quantity ");
+        quantityTextField.setMaxWidth(300);
+        quantityTextField.setMinHeight(30);
+        quantityTextField.setFont(Font.font(16));
         setStockButton = new Button("Set Stock");
         makeSaleButton = new Button("Make Sale");
-
+        setStockButton.setStyle("-fx-background-radius: 10; -fx-font-size: 14;");
+        makeSaleButton.setStyle("-fx-background-radius: 10; -fx-font-size: 14;");
         // Initially, hide the quantity text field and buttons
         quantityTextField.setVisible(false);
         setStockButton.setVisible(false);
@@ -665,8 +680,9 @@ public class App extends Application {
         med.setOnAction(e-> {
            
                 selectedMedIndex = med.getSelectionModel().getSelectedIndex();
-                root.getChildren().clear(); // Clear previous responses
-                root.getChildren().addAll(
+                pane.getChildren().clear(); // Clear previous responses
+                pane.getChildren().addAll(
+                    label,
                         med,
                         stockLabel,
                         expLabel,
@@ -729,8 +745,12 @@ public class App extends Application {
                 }
             
         });
+        pane.getChildren().addAll(med);
+        root.getChildren().add(pane);
+        Scene sc = new Scene(root, 800, 534);
+        priStage.setScene(sc);
 
-        root.getChildren().addAll(med);
+        
     }
     public static void billScene(Stage priStage,PatientRecords pat){
         priStage.setTitle("PDF Bill Generator");
