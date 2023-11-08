@@ -42,7 +42,7 @@ import javafx.stage.Stage;
 import javafx.util.Duration;
 
 public class App extends Application {
-    static int attempt;
+    static int attempt,check;
     Label last;
     TextField textField=new TextField();
     TextField department;
@@ -132,6 +132,7 @@ public class App extends Application {
                 comboBox.setStyle("-fx-font-size: 14; -fx-background-radius: 5");
                 comboBox.setOnAction(event->{
                         String opt=comboBox.getValue();
+                        check=0;
                         if(opt.equals("Employee")){
                             if(last!=null){
                                     vBox2.getChildren().remove(last);
@@ -182,7 +183,7 @@ public class App extends Application {
                                     Label details=new Label(emp.toString()+assign);
                                     last=details;
                                     details.setStyle("-fx-font-size: 24; -fx-background-color: white; -fx-text-fill: black; -fx-border-color: black; -fx-border-width: 4px;");
-                                    
+                                    check=0;
                                     
                                     details.setMaxWidth(800);
                                     details.setMinHeight(300);
@@ -199,8 +200,9 @@ public class App extends Application {
                                     Alert errorAlert = new Alert(Alert.AlertType.ERROR);
                                     errorAlert.setTitle("Employee not in Database");
                                     errorAlert.setHeaderText(null);
-                                    errorAlert.setContentText("Employee not present in Database, Add employee");
+                                    errorAlert.setContentText("Employee not present in Database, Add employee or enter correct spelling");
                                     errorAlert.showAndWait();
+                                    if(check==2){
                                     TextField age=new TextField();
                                     age.setPromptText("Enter age ");
                                     age.setMaxWidth(300);
@@ -264,9 +266,13 @@ public class App extends Application {
                                         
                                         }
                                     });
+                                    check=0;
+                                }else{
+                                    check++;
                                 }
+                            }
                             });
-                            
+                        
 
                         }else if (opt.equals("Patient")) {
                             if(last!=null){
@@ -316,23 +322,34 @@ public class App extends Application {
                                         vBox2.getChildren().addAll(c5,btn5);
                                         c5.setStyle("-fx-font-size: 20; -fx-text-fill: yellow;");
                                         btn5.setOnAction(eve2->{
-                                            if(c5.isSelected() && flag==false){
+                                            if(c5.isSelected()){
                                                 
                                                 EmpInsertDelete.removePat(name, EmpInsertDelete.getAttending(name, pat.getConcernedDepartment()));
                                                 Existing.updatePat(name);
-                                                flag=true;
+                                                Alert successAlert2 = new Alert(Alert.AlertType.INFORMATION);
+                                                successAlert2.setTitle("Record Updated");
+                                                successAlert2.setHeaderText(null);
+                                                successAlert2.setContentText("Record Updated Appointment Done");
+                                                successAlert2.showAndWait();
+                                                vBox2.getChildren().removeAll(c5,btn5);
+                                                btn5=new Button("Go To Pharmacy");
+                                                btn5.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
+                                                btn4=new Button("Print Bill");
+                                                btn4.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
+                                                HBox hBox3=new HBox();
+                                                btn4.setTranslateX(15);
+                                                hBox3.getChildren().addAll(btn5,btn4);
+                                                vBox2.getChildren().add(hBox3);
+                                                btn5.setOnAction(eve->{
+                                                    pharmScene(primaryStage);
+                                                });
+                                                btn4.setOnAction(eve3->{
+                                                    billScene(primaryStage);
+                                                });
+
+                                                
                                             }
                                             
-                                        });
-                                    }else{
-                                        btn5=new Button("Go To Pharmacy");
-                                        btn4=new Button("Print Bill");
-                                        HBox hBox3=new HBox();
-                                        HBox.setMargin(btn4, new Insets(10));
-                                        hBox3.getChildren().addAll(btn5,btn4);
-                                        vBox2.getChildren().add(hBox3);
-                                        btn5.setOnAction(eve->{
-                                            newScene(primaryStage);
                                         });
                                     }
                                 
@@ -374,9 +391,9 @@ public class App extends Application {
                                     address.setFont(Font.font(16));
                                     HBox hBox3=new HBox(10);
                                     CheckBox c1=new CheckBox("Illness");
-                                    c1.setStyle("-fx-font-size: 16; -fx-text-fill: yellow;");
-                                    CheckBox c2=new CheckBox("Injury");
-                                    c2.setStyle("-fx-font-size: 16; -fx-text-fill: yellow;");
+                                    c1.setStyle("-fx-font-size: 16; -fx-text-fill: white;");
+                                    CheckBox c2=new CheckBox("Injury/Diagnosed Patient");
+                                    c2.setStyle("-fx-font-size: 16; -fx-text-fill: white;");
                                     hBox3.getChildren().addAll(c1,c2);
                                      Alert errorAlert5=new Alert(Alert.AlertType.ERROR);
                                     c1.setOnAction(e8->{
@@ -570,9 +587,14 @@ public class App extends Application {
         alert.showAndWait();
         
     }
-    public static void newScene(Stage priStage){
+    public static void pharmScene(Stage priStage){
         FlowPane pane=new FlowPane(10,10);
-        Scene scene=new Scene(pane);
+        Scene scene=new Scene(pane,500,500);
+        priStage.setScene(scene);
+    }
+    public static void billScene(Stage priStage){
+        FlowPane pane=new FlowPane(10, 10);
+        Scene scene=new Scene(pane,500,500);
         priStage.setScene(scene);
     }
 }
