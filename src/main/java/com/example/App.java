@@ -351,6 +351,22 @@ public class App extends Application {
                                             }
                                             
                                         });
+                                    }else{
+                                        vBox2.getChildren().removeAll(c5,btn5);
+                                        btn5=new Button("Go To Pharmacy");
+                                        btn5.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
+                                        btn4=new Button("Print Bill");
+                                        btn4.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
+                                        HBox hBox3=new HBox();
+                                        btn4.setTranslateX(15);
+                                        hBox3.getChildren().addAll(btn5,btn4);
+                                        vBox2.getChildren().add(hBox3);
+                                        btn5.setOnAction(eve->{
+                                            pharmScene(primaryStage);
+                                        });
+                                        btn4.setOnAction(eve3->{
+                                            billScene(primaryStage);
+                                        });
                                     }
                                 
                                     
