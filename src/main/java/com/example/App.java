@@ -1,6 +1,7 @@
 package com.example;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Random;
 
 
@@ -10,6 +11,12 @@ import com.example.Employees.EmployeeRecord;
 import com.example.Login.*;
 import com.example.Patients.Existing;
 import com.example.Patients.PatientRecords;
+import com.itextpdf.kernel.pdf.PdfDocument;
+//import com.itextpdf.kernel.pdf.PdfPage;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
+import com.itextpdf.layout.properties.TextAlignment;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -27,6 +34,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 //import javafx.scene.layout.Background;
 //import javafx.scene.layout.BackgroundFill;
@@ -609,8 +617,83 @@ public class App extends Application {
         priStage.setScene(scene);
     }
     public static void billScene(Stage priStage){
-        FlowPane pane=new FlowPane(10, 10);
-        Scene scene=new Scene(pane,500,500);
+        priStage.setTitle("PDF Bill Generator");
+
+        GridPane grid = new GridPane();
+        grid.setHgap(10);
+        grid.setVgap(10);
+        grid.setPadding(new Insets(20, 20, 20, 20));
+        Label itemNameLabel = new Label("Item Name:");
+        TextField itemNameTextField = new TextField();
+        grid.add(itemNameLabel, 0, 0);
+        grid.add(itemNameTextField, 1, 0);
+
+        // Label and TextField for Item Price
+        Label itemPriceLabel = new Label("Item Price:");
+        TextField itemPriceTextField = new TextField();
+        grid.add(itemPriceLabel, 0, 1);
+        grid.add(itemPriceTextField, 1, 1);
+
+        // Button to Add Item
+        Button addItemButton = new Button("Add Item");
+        grid.add(addItemButton, 0, 2);
+
+        // TextArea to display the bill
+        TextArea billTextArea = new TextArea();
+        billTextArea.setEditable(false);
+        billTextArea.setWrapText(true);
+        grid.add(billTextArea, 0, 3, 2, 1);
+
+        // Calculate Total Button
+        Button calculateTotalButton = new Button("Generate PDF Bill");
+        HBox hbox = new HBox(10);
+        hbox.getChildren().addAll(calculateTotalButton);
+        grid.add(hbox, 0, 4);
+
+        // Event handler for adding an item
+        addItemButton.setOnAction(e -> {
+            String itemName = itemNameTextField.getText();
+            String itemPriceText = itemPriceTextField.getText();
+
+            if (!itemName.isEmpty() && !itemPriceText.isEmpty()) {
+                billTextArea.appendText(itemName + ": $" + itemPriceText + "\n");
+                itemNameTextField.clear();
+                itemPriceTextField.clear();
+            }
+        });
+
+        // Event handler for generating the PDF bill
+        calculateTotalButton.setOnAction(e -> {
+            String items = billTextArea.getText();
+
+            if (!items.isEmpty()) {
+                try {
+                    generatePDFBill(items);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        });
+        Scene scene = new Scene(grid, 400, 400);
         priStage.setScene(scene);
+        priStage.show();
     }
+
+    private static void generatePDFBill(String items) throws IOException {
+        PdfWriter writer = new PdfWriter("bill.pdf");
+        PdfDocument pdf = new PdfDocument(writer);
+        Document document = new Document(pdf);
+
+        document.add(new Paragraph("Bill Details:")
+                .setTextAlignment(TextAlignment.CENTER));
+        document.add(new Paragraph(items));
+
+        document.close();
+
+        System.out.println("PDF bill generated at: bill.pdf");
+    }
+    
 }
+
+
+
