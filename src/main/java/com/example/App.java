@@ -11,6 +11,7 @@ import com.example.Employees.EmployeeRecord;
 import com.example.Login.*;
 import com.example.Patients.Existing;
 import com.example.Patients.PatientRecords;
+
 import com.itextpdf.kernel.pdf.PdfDocument;
 //import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -34,7 +35,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.GridPane;
+
 import javafx.scene.layout.HBox;
 //import javafx.scene.layout.Background;
 //import javafx.scene.layout.BackgroundFill;
@@ -51,6 +52,7 @@ import javafx.util.Duration;
 
 public class App extends Application {
     static int attempt,check;
+    static String bill_details;
     Label last;
     TextField textField=new TextField();
     TextField department;
@@ -352,7 +354,7 @@ public class App extends Application {
                                                     pharmScene(primaryStage);
                                                 });
                                                 btn4.setOnAction(eve3->{
-                                                    billScene(primaryStage);
+                                                    billScene(primaryStage,pat);
                                                 });
 
                                                 
@@ -373,7 +375,7 @@ public class App extends Application {
                                             pharmScene(primaryStage);
                                         });
                                         btn4.setOnAction(eve3->{
-                                            billScene(primaryStage);
+                                            billScene(primaryStage,pat);
                                         });
                                     }
                                 
@@ -616,70 +618,48 @@ public class App extends Application {
         Scene scene=new Scene(pane,500,500);
         priStage.setScene(scene);
     }
-    public static void billScene(Stage priStage){
+    public static void billScene(Stage priStage,PatientRecords pat){
         priStage.setTitle("PDF Bill Generator");
-
-        GridPane grid = new GridPane();
-        grid.setHgap(10);
-        grid.setVgap(10);
-        grid.setPadding(new Insets(20, 20, 20, 20));
-        Label itemNameLabel = new Label("Item Name:");
-        TextField itemNameTextField = new TextField();
-        grid.add(itemNameLabel, 0, 0);
-        grid.add(itemNameTextField, 1, 0);
-
-        // Label and TextField for Item Price
-        Label itemPriceLabel = new Label("Item Price:");
-        TextField itemPriceTextField = new TextField();
-        grid.add(itemPriceLabel, 0, 1);
-        grid.add(itemPriceTextField, 1, 1);
-
-        // Button to Add Item
-        Button addItemButton = new Button("Add Item");
-        grid.add(addItemButton, 0, 2);
-
-        // TextArea to display the bill
-        TextArea billTextArea = new TextArea();
-        billTextArea.setEditable(false);
-        billTextArea.setWrapText(true);
-        grid.add(billTextArea, 0, 3, 2, 1);
-
-        // Calculate Total Button
-        Button calculateTotalButton = new Button("Generate PDF Bill");
-        HBox hbox = new HBox(10);
-        hbox.getChildren().addAll(calculateTotalButton);
-        grid.add(hbox, 0, 4);
-
-        // Event handler for adding an item
-        addItemButton.setOnAction(e -> {
-            String itemName = itemNameTextField.getText();
-            String itemPriceText = itemPriceTextField.getText();
-
-            if (!itemName.isEmpty() && !itemPriceText.isEmpty()) {
-                billTextArea.appendText(itemName + ": $" + itemPriceText + "\n");
-                itemNameTextField.clear();
-                itemPriceTextField.clear();
+        
+        FlowPane pane=new FlowPane(Orientation.VERTICAL,10,10);
+        
+        bill_details="\nName : "+ pat.getName()+"\n\nAddress : "+pat.getAddress()+"\n\nPhone number : "+pat.getPhoneNo()+"\n\nConcerned Department is "+pat.getConcernedDepartment();
+        if(pat.getSurgery()){
+            bill_details+="\n\nSurgery Cost: 30000";
+        }else{
+            if(pat.getInjury()){
+                bill_details+="\n\nSpecialist Consultation Cost: 1000";
             }
-        });
-
+            else{
+                bill_details+="\n\nGeneral Consultation Cost: 450";
+            }
+        }
+        Label heading=new Label("*******BILL*******");
+        heading.setFont(Font.font("Times New Roman",FontWeight.BOLD,32));
+        heading.setTranslateX(40);
+        Label label=new Label(bill_details);
+        label.setFont(Font.font("Times New Roman",20));
+        Button calculateTotalButton = new Button("Generate PDF Bill");
+        calculateTotalButton.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
+        calculateTotalButton.setTranslateX(100);
+        calculateTotalButton.setTranslateY(10);
+        pane.getChildren().addAll(heading,label,calculateTotalButton);
+        
         // Event handler for generating the PDF bill
         calculateTotalButton.setOnAction(e -> {
-            String items = billTextArea.getText();
-
-            if (!items.isEmpty()) {
-                try {
-                    generatePDFBill(items);
+            try {
+                    generatePDFBill(heading+bill_details,pane);
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
-            }
+            
         });
-        Scene scene = new Scene(grid, 400, 400);
+        Scene scene = new Scene(pane, 400, 400);
         priStage.setScene(scene);
         priStage.show();
     }
 
-    private static void generatePDFBill(String items) throws IOException {
+    private static void generatePDFBill(String items,FlowPane pane) throws IOException {
         PdfWriter writer = new PdfWriter("bill.pdf");
         PdfDocument pdf = new PdfDocument(writer);
         Document document = new Document(pdf);
@@ -690,7 +670,11 @@ public class App extends Application {
 
         document.close();
 
-        System.out.println("PDF bill generated at: bill.pdf");
+        Label label=new Label("PDF of Bill generated");
+        label.setFont(Font.font(16));
+        label.setStyle("-fx-text-fill: green;");
+        label.setTranslateX(100);
+        pane.getChildren().add(label);
     }
     
 }
