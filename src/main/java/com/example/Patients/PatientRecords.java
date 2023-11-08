@@ -5,13 +5,16 @@ public class PatientRecords {
     private String address;
     private String mPhoneNo;
     private String email;
+    private String attending;
     private String mConcernedDepartment;
+   
     private int age;
     private boolean illness;
     private boolean injury;
     private boolean surgery;
+    private boolean aptdone;
     public PatientRecords(){}
-    public PatientRecords(String name,String address,String email,String pno,String cd,int age,boolean illness,boolean injury,boolean surgery){
+    public PatientRecords(String name,String address,String email,String pno,String cd,int age,boolean illness,boolean injury,boolean surgery,boolean aptdone,String attending){
         this.name=name;
         this.address=address;
         this.email=email;
@@ -21,6 +24,8 @@ public class PatientRecords {
         this.illness=illness;
         this.injury=injury;
         this.surgery=surgery;
+        this.aptdone=aptdone;
+        this.attending=attending;
     }
     public String getName(){
         return name;
@@ -52,6 +57,12 @@ public class PatientRecords {
     public void setConcernedDepartment(String cd){
         mConcernedDepartment=cd;
     }
+    public String getAttending(){
+        return name;
+    }
+    public void setAttending(String attending){
+        this.attending=attending;
+    }
     public int getAge(){
         return age;
     }
@@ -76,9 +87,15 @@ public class PatientRecords {
     public void setSurgery(boolean surgery){
         this.surgery=surgery;
     }
+    public boolean getAptdone(){
+        return aptdone;
+    }
+    public void setAptdone(boolean aptdone){
+        this.aptdone=aptdone;
+    }
 
     @Override
     public String toString(){
-        return "Name is "+ name+"\nAddress is "+address+"\nPhone number is "+mPhoneNo+"\nAge is "+age+"\nConcerned Department is "+mConcernedDepartment;
+        return "Name is "+ name+"\nAddress is "+address+"\nPhone number is "+mPhoneNo+"\nAge is "+age+"\nConcerned Department is "+mConcernedDepartment+"\nDoctor Assigned: "+attending+"\nAppointment Done: "+aptdone;
     }
 }

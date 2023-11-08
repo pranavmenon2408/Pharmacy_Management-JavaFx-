@@ -2,6 +2,7 @@ package com.example;
 
 import java.util.Random;
 
+
 import com.example.Employees.EmpInsertDelete;
 import com.example.Employees.EmployeeRecord;
 //import com.example.Patients.*;
@@ -16,6 +17,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
+import javafx.geometry.Orientation;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
@@ -23,7 +25,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-
+import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.HBox;
 //import javafx.scene.layout.Background;
 //import javafx.scene.layout.BackgroundFill;
@@ -44,11 +46,11 @@ public class App extends Application {
     TextField textField=new TextField();
     TextField department;
     Button btn3=new Button("");
-    Button btn4;
+    Button btn4,btn5;
     private String dept;
     String assign="\nPatients: \n";
-    CheckBox c3;
-    boolean illness,injury,surgery;
+    CheckBox c3,c5,c6;
+    boolean illness,injury,surgery,flag;
     public static void main(String[] args) {
         
         launch(args);
@@ -60,7 +62,7 @@ public class App extends Application {
         
         GaussianBlur g=new GaussianBlur();
         g.setRadius(20);
-        Image bImage=new Image("file:///C:/Users/Pranav/Downloads/digigov-hmis-hospital-management-system-maintain.jpg");
+        Image bImage=new Image("file:///C://Users//Pranav//demo//img//digigov-hmis-hospital-management-system-maintain.jpg");
         ImageView bImageView=new ImageView(bImage);
         bImageView.setEffect(g);
         StackPane root=new StackPane(bImageView);
@@ -84,6 +86,7 @@ public class App extends Application {
         usernameField.setPromptText("Enter Username");
         PasswordField passwordField = new PasswordField();
         passwordField.setPromptText("Enter Password");
+        
         usernameField.setMaxWidth(300);
         usernameField.setMinHeight(30);
         usernameField.setFont(Font.font(16));
@@ -91,6 +94,7 @@ public class App extends Application {
         passwordField.setMaxWidth(300);
         passwordField.setMinHeight(30);
         passwordField.setFont(Font.font(16));
+        
         VBox.setMargin(passwordField, new Insets(5));
         // Create a Login button
         //FlowPane pane=new FlowPane();
@@ -112,7 +116,7 @@ public class App extends Application {
                 g.setRadius(5);
                 bImageView.setEffect(g);
                 StackPane roPane=new StackPane(bImageView);
-                VBox vBox2=new VBox(10);
+                FlowPane vBox2=new FlowPane(Orientation.VERTICAL,10,10);
                 vBox2.setPadding(new Insets(20,20,20,20));
                 Label tLabel2=new Label("Employee/Patient Details");
                 tLabel2.setStyle("-fx-text-fill: darkblue; -fx-background-color: lightgray;");
@@ -129,6 +133,10 @@ public class App extends Application {
                                     vBox2.getChildren().remove(last);
                                     last=null;
                                     assign="\nPatients: \n";
+                            }
+                            if(c5!=null){
+                                vBox2.getChildren().removeAll(c5,btn5);
+                                c5=null;
                             }
                             if(vBox2.getChildren().contains(textField))
                                 vBox2.getChildren().removeAll(textField,btn3);
@@ -261,6 +269,7 @@ public class App extends Application {
                                     vBox2.getChildren().removeAll(last);
                                     last=null;
                             }
+
                             if(vBox2.getChildren().contains(textField))
                                 vBox2.getChildren().removeAll(textField,btn3);
                             textField.setPromptText("Enter Patient Name");
@@ -275,20 +284,44 @@ public class App extends Application {
                             btn3.setOnAction(e5->{
                                 String name=textField.getText();
                                 PatientRecords pat=Existing.returnPat(name);
-                                
+                                flag=false;
                                 if(last!=null){
                                     vBox2.getChildren().remove(last);
                                     last=null;
                                 }
+                                if(c5!=null){
+                                    vBox2.getChildren().removeAll(c5,btn5);
+                                    c5=null;
+                                }
                                 if(pat!=null){
                                     
-                                    String doc=EmpInsertDelete.getAttending(name, pat.getConcernedDepartment());
-                                    Label details=new Label(pat.toString()+"\nDoctor Assigned: "+doc);
+                                    //String doc=EmpInsertDelete.getAttending(name, pat.getConcernedDepartment());
+                                    Label details=new Label(pat.toString());
                                     last=details;
                                     details.setStyle("-fx-font-size: 20; -fx-background-color: white; -fx-text-fill: black; -fx-border-color: black; -fx-border-width: 4px;");
                                     details.setMaxWidth(400);
                                     details.setMinHeight(250);
                                     vBox2.getChildren().addAll(details);
+                                    if(pat.getAptdone()==false){
+                                        c5=new CheckBox("Appointment/Surgery Done?");
+                                        
+                                        btn5=new Button("Update record");
+                                        btn5.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
+                                        btn5.setTranslateX(30);
+                                        btn5.setTranslateY(10);
+                                        vBox2.getChildren().addAll(c5,btn5);
+                                        c5.setStyle("-fx-font-size: 20; -fx-text-fill: yellow;");
+                                        btn5.setOnAction(eve2->{
+                                            if(c5.isSelected() && flag==false){
+                                                
+                                                EmpInsertDelete.removePat(name, EmpInsertDelete.getAttending(name, pat.getConcernedDepartment()));
+                                                Existing.updatePat(name);
+                                                flag=true;
+                                            }
+                                        });
+                                    }
+                                
+                                    
                                 }
                                 else{
                                     
@@ -407,8 +440,10 @@ public class App extends Application {
                                             errorAlert4.showAndWait();
                                         }
                                         else{
-                                        Existing.insertPat(name, addr, em, pno, dept, a,illness, injury, surgery);
+                                        
                                         EmpInsertDelete.updateEmp(name, dept);
+                                        String doc=EmpInsertDelete.getAttending(name, dept);
+                                        Existing.insertPat(name, addr, em, pno, dept, a,illness, injury, surgery,doc);
                                         Alert successAlert2 = new Alert(Alert.AlertType.INFORMATION);
                                         successAlert2.setTitle("Patient Aded");
                                         successAlert2.setHeaderText(null);
