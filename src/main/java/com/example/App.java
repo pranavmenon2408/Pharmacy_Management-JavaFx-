@@ -153,6 +153,11 @@ public class App extends Application {
                                 vBox2.getChildren().removeAll(c5,btn5);
                                 c5=null;
                             }
+                            if(btn5!=null){
+                                    vBox2.getChildren().removeAll(btn5,btn4);
+                                    btn4=null;
+                                    btn5=null;
+                            }
                             if(vBox2.getChildren().contains(textField))
                                 vBox2.getChildren().removeAll(textField,btn3);
                             textField.setPromptText("Enter Employee Name");
@@ -312,6 +317,11 @@ public class App extends Application {
                                 if(c5!=null){
                                     vBox2.getChildren().removeAll(c5,btn5);
                                     c5=null;
+                                }
+                                if(btn5!=null){
+                                    vBox2.getChildren().removeAll(btn5,btn4);
+                                    btn4=null;
+                                    btn5=null;
                                 }
                                 if(pat!=null){
                                     
