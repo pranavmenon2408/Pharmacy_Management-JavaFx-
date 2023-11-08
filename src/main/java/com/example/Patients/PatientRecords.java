@@ -58,7 +58,7 @@ public class PatientRecords {
         mConcernedDepartment=cd;
     }
     public String getAttending(){
-        return name;
+        return attending;
     }
     public void setAttending(String attending){
         this.attending=attending;
