@@ -84,7 +84,7 @@ public class App extends Application {
         
         GaussianBlur g=new GaussianBlur();
         g.setRadius(20);
-        String relative="src\\main\\java\\com\\example\\img\\digigov-hmis-hospital-management-system-maintain.jpg";
+        String relative="target\\classes\\com\\example\\img\\digigov-hmis-hospital-management-system-maintain.jpg";
         File file=new File(relative);
         String imageUrl=file.toURI().toString();
         Image bImage=new Image(imageUrl);
@@ -638,7 +638,7 @@ public class App extends Application {
     public static void pharmScene(Stage priStage,PatientRecords patient){
         GaussianBlur g=new GaussianBlur();
         g.setRadius(15);
-        String relative="src\\main\\java\\com\\example\\img\\pharmacy.jpg";
+        String relative="target\\classes\\com\\example\\img\\pharmacy.jpg";
         File file=new File(relative);
         String imageUrl=file.toURI().toString();
         Image bImage=new Image(imageUrl);
