@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.Random;
 
 
+
 import com.example.Employees.EmpInsertDelete;
 import com.example.Employees.EmployeeRecord;
 //import com.example.Patients.*;
@@ -740,6 +741,7 @@ public class App extends Application {
                 quantityTextField.setManaged(updateStockCheckbox.isSelected());
                 setStockButton.setManaged(updateStockCheckbox.isSelected());
                 makeSaleButton.setVisible(false);
+                makeSaleButton.setManaged(false);
             
         });
 
@@ -747,6 +749,7 @@ public class App extends Application {
             
                 // Show/hide make sale button based on "Make Sale" checkbox
                 makeSaleButton.setVisible(makeSaleCheckbox.isSelected());
+                makeSaleButton.setManaged(makeSaleCheckbox.isSelected());
                 quantityTextField.setVisible(false);
                 quantityTextField.setManaged(false);
                 setStockButton.setVisible(false);
@@ -762,6 +765,8 @@ public class App extends Application {
                         if (updateStockCheckbox.isSelected()) {
                             InStock.updateMed(med.getValue(), quantity);
                             resultLabel.setText("Updated stock: " + InStock.getDetails(med.getValue()).getStock());
+                            PharmacyRecord pham=InStock.getDetails(med.getValue());
+                            detailLabel.setText(pham.toString());
                         }
                     } catch (NumberFormatException e) {
                         resultLabel.setText("Invalid quantity. Please enter a number.");
