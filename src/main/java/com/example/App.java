@@ -11,7 +11,8 @@ import com.example.Employees.EmployeeRecord;
 import com.example.Login.*;
 import com.example.Patients.Existing;
 import com.example.Patients.PatientRecords;
-
+import com.example.Pharmacy.InStock;
+import com.example.Pharmacy.PharmacyRecord;
 import com.itextpdf.kernel.pdf.PdfDocument;
 //import com.itextpdf.kernel.pdf.PdfPage;
 import com.itextpdf.kernel.pdf.PdfWriter;
@@ -53,15 +54,16 @@ import javafx.util.Duration;
 
 public class App extends Application {
     static ComboBox<String> med;
-    static Label stockLabel, expLabel, prLabel, resultLabel;
+    static Label detailLabel, expLabel, prLabel, resultLabel;
     static CheckBox updateStockCheckbox, makeSaleCheckbox;
     static TextField quantityTextField;
     static Button setStockButton, makeSaleButton;
-
+    static int flag=0;
     private static int selectedMedIndex = -1;
-    private static int[] stock = {200, 100, 300};
-    static int attempt,check;
+    //private static int[] stock = {200, 100, 300};
+    static int attempt,check,total;
     static String bill_details;
+    static String final_bill;
     Label last;
     TextField textField=new TextField();
     TextField department;
@@ -70,7 +72,7 @@ public class App extends Application {
     private String dept;
     String assign="\nPatients: \n";
     CheckBox c3,c5,c6;
-    boolean illness,injury,surgery,flag;
+    boolean illness,injury,surgery;
     public static void main(String[] args) {
         
         launch(args);
@@ -318,7 +320,7 @@ public class App extends Application {
                             btn3.setOnAction(e5->{
                                 String name=textField.getText();
                                 PatientRecords pat=Existing.returnPat(name);
-                                flag=false;
+                                
                                 if(last!=null){
                                     vBox2.getChildren().remove(last);
                                     last=null;
@@ -370,7 +372,7 @@ public class App extends Application {
                                                 hBox3.getChildren().addAll(btn5,btn4);
                                                 vBox2.getChildren().add(hBox3);
                                                 btn5.setOnAction(eve->{
-                                                    pharmScene(primaryStage);
+                                                    pharmScene(primaryStage,pat);
                                                 });
                                                 btn4.setOnAction(eve3->{
                                                     billScene(primaryStage,pat);
@@ -391,7 +393,7 @@ public class App extends Application {
                                         hBox3.getChildren().addAll(btn5,btn4);
                                         vBox2.getChildren().add(hBox3);
                                         btn5.setOnAction(eve->{
-                                            pharmScene(primaryStage);
+                                            pharmScene(primaryStage,pat);
                                         });
                                         btn4.setOnAction(eve3->{
                                             billScene(primaryStage,pat);
@@ -471,7 +473,7 @@ public class App extends Application {
                                             department.setMinHeight(30);
                                             department.setFont(Font.font(16));
                                             c3=new CheckBox("Surgery Required?");
-                                            c3.setStyle("-fx-font-size: 16; -fx-text-fill: yellow;");
+                                            c3.setStyle("-fx-font-size: 16; -fx-text-fill: white;");
                                             surgery=false;
                                             illness=false;
                                             injury=true;
@@ -632,7 +634,7 @@ public class App extends Application {
         alert.showAndWait();
         
     }
-    public static void pharmScene(Stage priStage){
+    public static void pharmScene(Stage priStage,PatientRecords patient){
         GaussianBlur g=new GaussianBlur();
         g.setRadius(15);
         String relative="src\\main\\java\\com\\example\\img\\pharmacy.jpg";
@@ -642,64 +644,90 @@ public class App extends Application {
         ImageView bImageView=new ImageView(bImage);
         bImageView.setEffect(g);
         StackPane root=new StackPane(bImageView);
-        String meds[] = {"A", "B", "C"};
-        String pr[] = {"INR 180", "INR 230", "INR 130"};
-        String exp[] = {"03/2024", "05/2025", "07/2025"};
+        //String meds[] = {"A", "B", "C"};
+        
         priStage.setTitle("Pharmacy Management");
-
-        FlowPane pane=new FlowPane(Orientation.VERTICAL,10,10);
-        pane.setPadding(new Insets(15,15,15,15));
+        Button bill_button=new Button("Generate Bill");
+        bill_button.setStyle("-fx-background-radius: 10; -fx-font-size: 20;");
+        bill_button.setTranslateX(300);
+        bill_button.setTranslateY(5);
+        FlowPane pane=new FlowPane(10,10);
+        VBox vBox=new VBox(10);
+        Label bill=new Label();
+        bill.setTranslateX(200);
+        
+        
+        vBox.setPadding(new Insets(15,15,15,15));
         Label label=new Label("Pharmacy");
         label.setFont(Font.font("Times New Roman", FontWeight.BOLD, 42));
-        label.setTranslateX(320);
-        pane.getChildren().add(label);
-        stockLabel = new Label();
-        expLabel = new Label();
-        prLabel = new Label();
+        label.setTranslateX(300);
+        
+        detailLabel = new Label();
+        Label pat=new Label("\nPatient Name: "+patient.getName());
+        pat.setFont(Font.font("Times New Roman",FontWeight.BOLD,18));
         resultLabel = new Label();
-
-        ObservableList<String> medicine = FXCollections.observableArrayList(meds);
+        vBox.getChildren().addAll(label,pat);
+        String[] medlist=InStock.getMeds();
+        ObservableList<String> medicine = FXCollections.observableArrayList(medlist);
         med = new ComboBox<String>(medicine);
+        int amount[]=new int[medlist.length];
+        System.out.println(medlist.length);
+        for(int i=0;i<medlist.length;i++){
+            amount[i]=0;
+        }
 
         updateStockCheckbox = new CheckBox("Update Stock");
         makeSaleCheckbox = new CheckBox("Make Sale");
+        updateStockCheckbox.setStyle("-fx-font-size: 16; -fx-text-fill: black;");
+        makeSaleCheckbox.setStyle("-fx-font-size: 16; -fx-text-fill: black;");
         quantityTextField = new TextField();
         quantityTextField.setPromptText("Enter Quantity ");
-        quantityTextField.setMaxWidth(300);
-        quantityTextField.setMinHeight(30);
+        quantityTextField.setMaxWidth(350);
+        quantityTextField.setMinHeight(20);
         quantityTextField.setFont(Font.font(16));
         setStockButton = new Button("Set Stock");
         makeSaleButton = new Button("Make Sale");
-        setStockButton.setStyle("-fx-background-radius: 10; -fx-font-size: 14;");
-        makeSaleButton.setStyle("-fx-background-radius: 10; -fx-font-size: 14;");
+        setStockButton.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
+        makeSaleButton.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
         // Initially, hide the quantity text field and buttons
         quantityTextField.setVisible(false);
         setStockButton.setVisible(false);
         makeSaleButton.setVisible(false);
-
+        resultLabel.setFont(Font.font("Times New Roman",FontWeight.BOLD,28));
+        resultLabel.setTranslateY(5);
+        resultLabel.setTranslateX(5);
+        resultLabel.setStyle("-fx-text-fill: white;");
         med.setOnAction(e-> {
-           
+                resultLabel.setText("");
                 selectedMedIndex = med.getSelectionModel().getSelectedIndex();
-                pane.getChildren().clear(); // Clear previous responses
-                pane.getChildren().addAll(
+                String medname=med.getValue();
+                vBox.getChildren().clear();
+                if (selectedMedIndex >= 0) {
+                    PharmacyRecord pham=InStock.getDetails(medname);
+                    detailLabel.setText(pham.toString());
+                    detailLabel.setFont(Font.font("Times New Roman",FontWeight.BOLD,18));
+                    
+                    System.out.println(pham);
+
+                }
+                
+                 // Clear previous responses
+                vBox.getChildren().addAll(
                     label,
+                    pat,
                         med,
-                        stockLabel,
-                        expLabel,
-                        prLabel,
+                        detailLabel,
                         updateStockCheckbox,
                         makeSaleCheckbox,
                         quantityTextField,
                         setStockButton,
                         makeSaleButton,
-                        resultLabel
-                ); // Add ComboBox, labels, checkboxes, text field, buttons, and result label to VBox
+                        resultLabel,bill_button
+                );
+                
+                 // Add ComboBox, labels, checkboxes, text field, buttons, and result label to VBox
 
-                if (selectedMedIndex >= 0) {
-                    stockLabel.setText("Stock: " + stock[selectedMedIndex]);
-                    expLabel.setText("Expiration Date: " + exp[selectedMedIndex]);
-                    prLabel.setText("Price: " + pr[selectedMedIndex]);
-                }
+                
             
         });
 
@@ -708,6 +736,8 @@ public class App extends Application {
                 // Show/hide quantity text field and set stock button based on "Update Stock" checkbox
                 quantityTextField.setVisible(updateStockCheckbox.isSelected());
                 setStockButton.setVisible(updateStockCheckbox.isSelected());
+                quantityTextField.setManaged(updateStockCheckbox.isSelected());
+                setStockButton.setManaged(updateStockCheckbox.isSelected());
                 makeSaleButton.setVisible(false);
             
         });
@@ -717,7 +747,9 @@ public class App extends Application {
                 // Show/hide make sale button based on "Make Sale" checkbox
                 makeSaleButton.setVisible(makeSaleCheckbox.isSelected());
                 quantityTextField.setVisible(false);
+                quantityTextField.setManaged(false);
                 setStockButton.setVisible(false);
+                setStockButton.setManaged(false);
             
         });
 
@@ -727,8 +759,8 @@ public class App extends Application {
                     try {
                         int quantity = Integer.parseInt(quantityTextField.getText());
                         if (updateStockCheckbox.isSelected()) {
-                            stock[selectedMedIndex] += quantity;
-                            resultLabel.setText("Updated stock: " + stock[selectedMedIndex]);
+                            InStock.updateMed(med.getValue(), quantity);
+                            resultLabel.setText("Updated stock: " + InStock.getDetails(med.getValue()).getStock());
                         }
                     } catch (NumberFormatException e) {
                         resultLabel.setText("Invalid quantity. Please enter a number.");
@@ -736,16 +768,31 @@ public class App extends Application {
                 }
             
         });
-
+        
         makeSaleButton.setOnAction(e5-> {
-            
+                String display="Medicines Total: \n";
+                total=0;
                 if (selectedMedIndex >= 0 && makeSaleCheckbox.isSelected()) {
-                    stock[selectedMedIndex] -= 1;
-                    resultLabel.setText("Updated stock: " + stock[selectedMedIndex]);
+                    InStock.updateMed(med.getValue(), -1);
+                    resultLabel.setText("Updated stock: " + InStock.getDetails(med.getValue()).getStock());
+                    amount[selectedMedIndex]++;
                 }
+                for(int i=0;i<medlist.length;i++){
+                    int ind=(amount[i]*InStock.getDetails(medlist[i]).getPrice());
+                    display+=medlist[i]+"\t "+ind+"\n";
+                    total+=ind;
+                }
+                bill.setText(display+"Total: "+total);
+                bill.setStyle("-fx-font-size: 20; -fx-background-color: white; -fx-text-fill: black; -fx-border-color: black; -fx-border-width: 4px;");
+                final_bill=display;
             
         });
-        pane.getChildren().addAll(med);
+        bill_button.setOnAction(eve->{
+            flag=1;
+            billScene(priStage, patient);
+        });
+        vBox.getChildren().addAll(med);
+        pane.getChildren().addAll(vBox,bill);
         root.getChildren().add(pane);
         Scene sc = new Scene(root, 800, 534);
         priStage.setScene(sc);
@@ -759,13 +806,25 @@ public class App extends Application {
         
         bill_details="\nName : "+ pat.getName()+"\n\nAddress : "+pat.getAddress()+"\n\nPhone number : "+pat.getPhoneNo()+"\n\nConcerned Department is "+pat.getConcernedDepartment();
         if(pat.getSurgery()){
-            bill_details+="\n\nSurgery Cost: 30000";
+            bill_details+="\n\nSurgery Cost: 30000\n";
+            if(flag==1){
+                bill_details+=final_bill+"\nTotal Cost: "+(30000+total);
+                
+            }
         }else{
             if(pat.getInjury()){
-                bill_details+="\n\nSpecialist Consultation Cost: 1000";
+                bill_details+="\n\nSpecialist Consultation Cost: 1000\n";
+                if(flag==1){
+                bill_details+=final_bill+"\nTotal Cost: "+(1000+total);
+                
+            }
             }
             else{
-                bill_details+="\n\nGeneral Consultation Cost: 450";
+                bill_details+="\n\nGeneral Consultation Cost: 450\n";
+                if(flag==1){
+                bill_details+=final_bill+"\nTotal Cost: "+(450+total);
+                
+            }
             }
         }
         Label heading=new Label("*******BILL*******");
@@ -788,9 +847,15 @@ public class App extends Application {
                 }
             
         });
-        Scene scene = new Scene(pane, 400, 400);
-        priStage.setScene(scene);
-        priStage.show();
+        if(flag==1){
+            Scene scene = new Scene(pane, 400, 500);
+            priStage.setScene(scene);
+            priStage.show();
+        }else{
+            Scene scene = new Scene(pane, 400, 400);
+            priStage.setScene(scene);
+            priStage.show();
+        }
     }
 
     private static void generatePDFBill(String items,FlowPane pane) throws IOException {

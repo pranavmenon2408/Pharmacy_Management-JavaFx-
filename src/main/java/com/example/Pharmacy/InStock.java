@@ -9,6 +9,7 @@ import org.bson.codecs.pojo.PojoCodecProvider;
 import org.bson.conversions.Bson;
 
 import com.mongodb.MongoException;
+import com.mongodb.client.FindIterable;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -27,7 +28,7 @@ import static org.bson.codecs.configuration.CodecRegistries.fromRegistries;
 
 public class InStock {
 
-    public static void updateMed(String name) {
+    public static void updateMed(String name,int num) {
         // Replace the uri string with your MongoDB deployment's connection string
         CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
         CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
@@ -43,7 +44,7 @@ public class InStock {
             int stock=pham.getStock();
             // Creates instructions to update the values of three document fields
             Bson updates = Updates.combine(
-                    Updates.set("stock", --stock)
+                    Updates.set("stock", stock+num)
                     );
 
             // Instructs the driver to insert a new document if none match the query
@@ -57,12 +58,66 @@ public class InStock {
                 pham=collection2.find(eq("name",name)).first();
                 System.out.println("Updated value: "+pham.getStock());
                 System.out.println("Modified document count: " + result.getModifiedCount());
+                mongoClient.close();
                 //System.out.println("Upserted id: " + result.getUpsertedId());
             
             // Prints a message if any exceptions occur during the operation
             } catch (MongoException me) {
                 System.err.println("Unable to update due to an error: " + me);
+                mongoClient.close();
             }
+        }
+    }
+    public static String[] getMeds(){
+        CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
+        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
+        String uri = "mongodb+srv://pranav2408dhruv:eedCE0SG9zXLbLJ1@cluster0.zsfaz5c.mongodb.net/?retryWrites=true&w=majority";
+
+        try (MongoClient mongoClient = MongoClients.create(uri)) {
+            //MongoDatabase database = mongoClient.getDatabase("HOMS");
+            MongoDatabase database2=mongoClient.getDatabase("HOMS").withCodecRegistry(pojoCodecRegistry);
+            
+            MongoCollection<PharmacyRecord> collection2=database2.getCollection("Pharmacy",PharmacyRecord.class);
+            int count=0;
+            FindIterable<PharmacyRecord> pham=collection2.find();
+            for(PharmacyRecord ph:pham){
+               count++;
+               System.out.println(ph);
+            }
+            String[] meds=new String[count];
+            int i=0;
+            for(PharmacyRecord ph:pham){
+                meds[i++]=ph.getName();
+            }
+            mongoClient.close();
+            return meds;
+            
+            // Instructs the driver to insert a new document if none match the query
+            //UpdateOptions options = new UpdateOptions().upsert(true);
+
+           
+        }
+    }
+    public static PharmacyRecord getDetails(String name){
+        CodecProvider pojoCodecProvider = PojoCodecProvider.builder().automatic(true).build();
+        CodecRegistry pojoCodecRegistry = fromRegistries(getDefaultCodecRegistry(), fromProviders(pojoCodecProvider));
+        String uri = "mongodb+srv://pranav2408dhruv:eedCE0SG9zXLbLJ1@cluster0.zsfaz5c.mongodb.net/?retryWrites=true&w=majority";
+
+        try (MongoClient mongoClient = MongoClients.create(uri)) {
+            //MongoDatabase database = mongoClient.getDatabase("HOMS");
+            MongoDatabase database2=mongoClient.getDatabase("HOMS").withCodecRegistry(pojoCodecRegistry);
+            
+            MongoCollection<PharmacyRecord> collection2=database2.getCollection("Pharmacy",PharmacyRecord.class);
+            
+            PharmacyRecord pham=collection2.find(eq("name", name)).first();
+
+            mongoClient.close();
+            return pham;
+            
+            // Instructs the driver to insert a new document if none match the query
+            //UpdateOptions options = new UpdateOptions().upsert(true);
+
+           
         }
     }
 }
