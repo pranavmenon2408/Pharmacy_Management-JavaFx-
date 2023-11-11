@@ -364,7 +364,8 @@ public class App extends Application {
                                                 successAlert2.setContentText("Record Updated Appointment Done");
                                                 successAlert2.showAndWait();
                                                 vBox2.getChildren().removeAll(c5,btn5);
-                                                details.setText(pat.toString());
+                                                PatientRecords pat2=Existing.returnPat(name);
+                                                details.setText(pat2.toString());
                                                 btn5=new Button("Go To Pharmacy");
                                                 btn5.setStyle("-fx-background-radius: 10; -fx-font-size: 16;");
                                                 btn4=new Button("Print Bill");
